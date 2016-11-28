@@ -1,10 +1,12 @@
 (function() {
     'use strict';
-    var myModule = angular.module("HelloAngular", ["isteven-multi-select"]);
+    var myModule = angular.module("HelloAngular", ["isteven-multi-select","pascalprecht.translate"]);
     myModule.controller("helloAngular", [ "$scope", function($scope) {
         $scope.greeting = {
             text : "hello",
         };
+        
+        $scope.lang = {"selectAll" : "全选"};
         
         $scope.modernBrowsers = [
                 {
