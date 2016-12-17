@@ -4,12 +4,19 @@
     <link rel="stylesheet" href="resources/js/angular-multi-select/isteven-multi-select.css">
 </head>
 <body>
-    <div ng-controller="helloAngular">
+    <div code="{{code}}" ng-controller="helloAngular">
+    
         <p>
             <span ng-bind="greeting.text"></span> ng
         </p>
         <div style="height: 100px" isteven-multi-select
             input-model="modernBrowsers" output-model="outputBrowsers"
+            button-label="name" item-label="name maker"
+            tick-property="ticked" >
+            orientation="horizontal"
+        </div>
+        <div style="height: 100px" isteven-multi-select
+            input-model="modernBrowsers2" output-model="outputBrowsers2"
             button-label="name" item-label="name maker"
             tick-property="ticked" >
             orientation="horizontal"
