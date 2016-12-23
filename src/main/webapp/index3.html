@@ -1,0 +1,38 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+    <link rel="stylesheet" href="resources/js/angular-multi-select/isteven-multi-select.css">
+    
+    <link rel="stylesheet" href="resources/js/angular-tree-control/css/tree-control-attribute.css">
+    <link rel="stylesheet" href="resources/js/angular-tree-control/css/tree-control.css">
+    <style type="text/css">
+        .my-css {
+            position: fixed;
+        }
+    
+    </style>
+</head>
+<body>
+    <div ng-controller="ctrl1">
+        <!-- as a Dom element -->
+        <treecontrol class="tree-light"
+           tree-model="dataForTheTree"
+           options="treeOptions"
+           on-selection="showSelected(node)"
+           expanded-nodes="expandedNodes" 
+           selected-node="node1">
+           employee: {{node.name}} age {{node.age}}
+        </treecontrol>
+        <div class="my-css">fsdf<br>ddddddddddd</div>
+        <div style="position: fixed;">dfdfdffffffffffffffffffd</div>
+    </div>
+</body>
+</html>
+
+<script src="resources/js/jquery.min.js"></script>
+<script src="resources/js/angular.js"></script>
+<script src="resources/js/angular-translate.js"></script>
+<script src="resources/js/angular-animate.min.js"></script>
+<script src="resources/js/angular-ui-router.js"></script>
+<script src="resources/js/angular-tree-control/angular-tree-control.js"></script>
+<script src="view/demo/js/app3.js"></script>
