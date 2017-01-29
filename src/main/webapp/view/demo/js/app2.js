@@ -124,6 +124,24 @@
         return that;
     }));
     
+    app.controller("ctrl21", defineController(depNames, baseModule, function(_super, _deps) {
+        
+        var that = {
+                code : "21",
+        };
+        
+        return that;
+    }));
+    
+    app.controller("ctrl3", defineController(depNames, baseModule, function(_super, _deps) {
+        
+        var that = {
+                code : "3",
+        };
+        
+        return that;
+    }));
+    
     function inArray(arr, val) {
         for (var i in arr) {
             if (arr[i] === val) {

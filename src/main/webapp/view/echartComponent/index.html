@@ -1,0 +1,34 @@
+<!doctype html>
+<html ng-app="app">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8"/>
+    <link rel="stylesheet" href="../../resources/js/angular-multi-select/isteven-multi-select.css">
+</head>
+<body>
+    <div ng-controller="ctrl1 as c">
+        <button ng-click="load()">click1</button>
+        {{c.outputBrowsers}}
+        {{opt.title}}
+        {{c.cjx}}
+        
+        <div ec1="opt">
+            <div style="height: 100px; width: 200pxi" isteven-multi-select
+                input-model="c.modernBrowsers" output-model="c.outputBrowsers"
+                button-label="name" item-label="name"
+                tick-property="ticked" >
+                orientation="horizontal"
+            </div>
+        </div>
+    </div>
+</body>
+</html>
+
+<script src="../../resources/js/jquery.min.js"></script>
+<script src="../../resources/js/angular.js"></script>
+<script src="../../resources/js/angular-translate.js"></script>
+<script src="../../resources/js/angular-animate.min.js"></script>
+<script src="../../resources/js/angular-ui-router.js"></script>
+<script src="../../resources/js/angular-multi-select/isteven-multi-select.js"></script>
+<script src="../../resources/js/echarts/echarts.js"></script>
+<script src="app.js"></script>
+<script src="ecComp.js"></script>
