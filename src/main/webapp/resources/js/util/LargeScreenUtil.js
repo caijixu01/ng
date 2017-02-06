@@ -39,7 +39,7 @@ var LargeScreenUtil = {
     
     setClass : function(className, flagAttr) {
         var t = MyUtil.getEventTarget();
-        if (t.tagName === "INPUT" || t.tagName === "input") {
+        if (t && (t.tagName === "INPUT" || t.tagName === "input")) {
             var $t = $(t); 
             $t.parent().find("["+flagAttr+"]").removeClass(className);
             $t.addClass(className);
@@ -187,10 +187,19 @@ var LargeScreenUtil = {
      * get 上周/月/日的日期的 开始/结束
      */
     getPre_startAndEndDate : function(dateType, date) {
+        return this.get_startAndEndDate(dateType, date, -1);
+    },
+    
+    /**
+     * get 周/月/日的日期的 开始/结束
+     */
+    get_startAndEndDate : function(dateType, date, offset) {
+        offset = offset || 0;
         if (date) {
-            return this.toDate(date);
+            date = this.toDate(date);
+        } else {
+            date = new Date();
         }
-        date = new Date();
         
         var ret = {
             startDate : undefined,
@@ -199,13 +208,13 @@ var LargeScreenUtil = {
         
         var dt;
         if (dateType === this.getDateTypes().week) {
-            dt = DateUtil.dateAdd("w", -1, date);
+            dt = DateUtil.dateAdd("w", offset, date);
             ret = DateUtil.getStartAndEndDate_byDateType(dt, "w");
         } else if (dateType === this.getDateTypes().month) {
-            dt = DateUtil.dateAdd("m", -1, date);
+            dt = DateUtil.dateAdd("m", offset, date);
             ret = DateUtil.getStartAndEndDate_byDateType(dt, "m");
         } else {
-            dt = DateUtil.dateAdd("d", -1, date);
+            dt = DateUtil.dateAdd("d", offset, date);
             ret = DateUtil.getStartAndEndDate_byDateType(dt, "d");
         }
         
@@ -222,5 +231,74 @@ var LargeScreenUtil = {
         ret.endDate = DateUtil.dateToStr_yyyyMMdd(ret.endDate);
         
         return ret;
+    },
+    
+    /**
+     * get 上周/月/日的日期的 开始/结束 str
+     */
+    getPre_startAndEndDateStr_yyyy_MM_dd : function(dateType, date) {
+        var ret = this.getPre_startAndEndDate(dateType, date);
+        
+        ret.startDate = DateUtil.dateToStr_yyyy_MM_dd(ret.startDate);
+        ret.endDate = DateUtil.dateToStr_yyyy_MM_dd(ret.endDate);
+        
+        return ret;
+    },
+    
+    /**
+     * get 周/月/日的日期的 开始/结束 str
+     */
+    get_startAndEndDateStr_yyyy_MM_dd : function(dateType, date) {
+        var ret = this.get_startAndEndDate(dateType, date);
+        
+        ret.startDate = DateUtil.dateToStr_yyyy_MM_dd(ret.startDate);
+        ret.endDate = DateUtil.dateToStr_yyyy_MM_dd(ret.endDate);
+        
+        return ret;
+    },
+    
+    getFullProvinceName : function(provinceName) {
+        var arr = [ '安徽省', '北京市', '福建省', '甘肃省', '广东省', '广西壮族自治区', '贵州省', '海南省',
+                '河北省', '河南省', '黑龙江省', '湖北省', '湖南省', '吉林省', '江苏省', '江西省', '辽宁省',
+                '内蒙古自治区', '宁夏回族自治区', '青海省', '山东省', '山西省', '陕西省', '上海市', '四川省',
+                '天津市', '西藏自治区', '新疆建设兵团', '新疆维吾尔自治区', '云南省', '浙江省', '重庆市'];
+        for (var i in arr) {
+            if (arr[i].indexOf(provinceName) != -1) {
+                return arr[i];
+            }
+        }
+        return undefined;
+    },
+    
+    getFullCompanyName : function(provinceName) {
+        var arr = [ '福州分公司', '厦门子公司', '国信', '西安分公司', '重庆分公司', '四川分公司', '云南分公司',
+                '苏州分公司', '温州分公司' ];
+        for (var i in arr) {
+            if (arr[i].indexOf(provinceName) != -1) {
+                return arr[i];
+            }
+        }
+        return undefined;
+    },
+    
+    getProvinceNameByShortName : function(provinceShortName) {
+        var json = {
+            "闽" : "福建",
+            "鄂" : "湖北",
+            "川" : "四川",
+            "苏" : "江苏",
+            "陕" : "陕西",
+            "浙" : "浙江",
+            "渝" : "重庆",
+        };
+        return json[provinceShortName];
+    },
+    
+    /**
+     * 单击图表
+     */
+    clickChart : function(param) {
+        console.log(param);
+        $state.go("ordinaryList", {search : {aaa : 1}});
     },
 };

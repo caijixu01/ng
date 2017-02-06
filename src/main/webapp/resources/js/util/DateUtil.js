@@ -89,6 +89,10 @@ var DateUtil = {
         return str;   
     },
     
+    dateToStr_yyyy_MM_dd : function(date) {
+        return this.dateToStr("yyyy-MM-dd", date);
+    },
+    
     dateToStr_yyyyMMdd : function(date) {
         return this.dateToStr("yyyyMMdd", date);
     },

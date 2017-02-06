@@ -11,7 +11,7 @@
         {{opt.title}}
         {{c.cjx}}
         
-        <div ec1="opt">
+        <div my-chart-line1="opt">
             <div style="height: 100px; width: 200pxi" isteven-multi-select
                 input-model="c.modernBrowsers" output-model="c.outputBrowsers"
                 button-label="name" item-label="name"
@@ -30,5 +30,16 @@
 <script src="../../resources/js/angular-ui-router.js"></script>
 <script src="../../resources/js/angular-multi-select/isteven-multi-select.js"></script>
 <script src="../../resources/js/echarts/echarts.js"></script>
+
 <script src="app.js"></script>
-<script src="ecComp.js"></script>
+
+<script src="../../resources/js/util/myUtil.js"></script>
+<script src="../../resources/js/util/echartsUtil.js"></script>
+<script src="../../resources/js/util/DateUtil.js"></script>
+<script src="../../resources/js/util/LargeScreenUtil.js"></script>
+
+<script src="../../resources/js/base/baseModule.js"></script>
+<script src="../../resources/js/base/baseListModule.js"></script>
+<script src="../../resources/js/base/baseChartModule.js"></script>
+
+<script src="myChart.directive.js"></script>

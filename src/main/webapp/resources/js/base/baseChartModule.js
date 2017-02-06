@@ -20,6 +20,25 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
     return {
         url : undefined,
         loadOnInit : true,
+        listPageStateName : undefined,
+        
+        /**
+         * 响应数据 格式2
+         * 2 : 格式2 (带总量的多组数据)
+         * 其它 : 早期定的格式
+         */
+        responseDataType : undefined,
+        
+        /**
+         * 是否有单击事件
+         */
+        hasClickEvent : true,
+        
+        /**
+         * 页面上的图表dom
+         */
+        chartDom : undefined,
+        
         // 图表 自定义配置
         chartCfg : {
             chartSubType : undefined,
@@ -38,6 +57,7 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
             name : "name",
             data : "data",
             dataName : "name",
+//            dataFullName : "name", // 
             dataValue : "num",
         },
         
@@ -53,6 +73,14 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
             return chartDomId;
         },
         
+        getChartDom : function() {
+            if (this.chartDom) {
+                return this.chartDom;
+            } else {
+                return document.getElementById(this.getChartDomId());
+            }
+        },
+        
         /**
          * 将接口返回的数据处理成标准的chartData数据
          * chartData数据格式:
@@ -61,11 +89,13 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
          *    dataGroup : 1, // 分组 (可空)
          *    data : [ // 数据array
          *              {
-         *                  name : "", // 名  一月
+         *                  name : "", // 名  1
+         *                  fullName : "", // 一月
          *                  value : "" // 值  10
          *              },
          *              {
-         *                  name : "", // 名  二月
+         *                  name : "", // 名  2
+         *                  fullName : "", // 二月
          *                  value : "" // 值  20
          *              }
          *              ...
@@ -78,6 +108,11 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
         dealResponseData : function(response) {
             var that = this;
             var data = MyUtil.getValueByFieldNames(response, "data");
+            
+            if (this.responseDataType == 2 && data) {
+                data = data["data"];
+            }
+            
             if (!data) {
                 data = [];
             } else if (!$.isArray(data)) {
@@ -96,6 +131,7 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
                     "data" : $.map(_datas, function(data) {
                         return {
                             "name" : data[that.responseDataFieldNames.dataName],
+                            "fullName" : data[that.responseDataFieldNames.dataFullName],
                             "value" : data[that.responseDataFieldNames.dataValue],
                         };
                     })
@@ -116,6 +152,10 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
             return data;
         },
         
+        getEchartsUtil : function() {
+            return window.EchartsUtil || this.deps.EchartsUtil;
+        },
+        
         /**
          * getChartOption
          */
@@ -123,7 +163,7 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
             var that = this;
             
             var chartData;
-            if (this.chartType === EchartsUtil.chartTypes.map) {
+            if (this.chartType === this.getEchartsUtil().chartTypes.map) {
                 chartData = {
                     "legend" : {
                         name : MyUtil.getJsonArrayFieldValues(data, "name"),
@@ -149,7 +189,7 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
 //                            ]
                     
                 };
-            } else if (this.chartType === EchartsUtil.chartTypes.pie) {
+            } else if (this.chartType === this.getEchartsUtil().chartTypes.pie) {
                 data = [data[0] || {}]; // 饼图 === 一维数据
                 
                 chartData = {
@@ -215,51 +255,100 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
                 };
             }
             
-            var option = EchartsUtil.getOption(this.chartType, chartData, this.chartCfg);
+            chartData["chartData"] = data;
+            var option = this.getEchartsUtil().getOption(this.chartType, chartData, this.chartCfg);
             
             return option;
         },
         
-        getReqParams : function() {
-        },
+//        getReqParams : function() {
+//        },
         
-        /**
-         * 加载图表
-         */
-        load : function() {
-            var that = this;
-            var params = that.getReqParams();
-            console.log(params);
-//            MyUtil.ajax_get(that.url, params, function(response) {
-//                var json = response;
-//                var myChart = that.load_callback(json);
-//            });
-            $http({
-                params : params,
-                url : that.url,
-                method : "GET"
-            }).then(function(response) {
-                var myChart = that.load_callback(response.data);
-            }); 
-        },
+//        /**
+//         * 加载图表
+//         */
+//        load : function() {
+//            var that = this;
+//            var params = that.getReqParams();
+//            console.log(params);
+////            MyUtil.ajax_get(that.url, params, function(response) {
+////                var json = response;
+////                var myChart = that.load_callback(json);
+////            });
+//            
+//            var $http = window.$http || this.deps.$http;
+//            $http({
+//                params : params,
+//                url : that.url,
+//                method : "GET"
+//            }).then(function(response) {
+//                var myChart = that.load_callback(response.data);
+//            }); 
+//        },
         
         /**
          * 加载图表-回调函数
          */
         load_callback : function(response) {
-            this.model.resp = response.data;
+            _super.load_callback.apply(this, arguments);
+            
+            var that = this;
             
             var response = this.dealResponseData(response);
             var chartOption = this.getChartOption(response);
-            var dom = document.getElementById(this.getChartDomId());
-            var myChart = echarts.init(dom, EchartsUtil.getTheme(EchartsUtil.themeTypes.blue));
+            var dom = this.getChartDom();
+            var myChart = echarts.init(dom, this.getEchartsUtil().getTheme(this.getEchartsUtil().themeTypes.blue));
             $("div:first", $(dom)).css("overflow","visible"); // 作用: tooltip 不被遮住
             myChart.setOption(chartOption);
+            if (this.hasClickEvent) {
+                myChart.on("click", function(param) {
+                    var listParam = that.parseListParamByChartParam(param);
+                    that.turnToListPage(undefined, listParam);
+                });
+            }
 //            var that = this;
 //            $(dom).click(function(e) {
 //                that.load();
 //            });
             return myChart;
+        },
+        
+        /**
+         * 解析图表单击事件的param成列表页参数
+         */
+        parseListParamByChartParam : function(param) {
+            return {};
+        },
+        
+        /**
+         * 跳转到列表页-的参数
+         */
+        getListParam : function() {
+            return {};
+        },
+        
+        /**
+         * 跳转到列表页
+         * @param param 附加参数
+         */
+        turnToListPage : function(listStateName, param) {
+            var listParam = this.getListParam();
+            var searchParam = $.extend({}, param, listParam);
+//            console.log(searchParam);
+            
+            var stateName;
+            if (listStateName) {
+                stateName = listStateName;
+            } else if (this.listPageStateName) {
+                stateName = this.listPageStateName;
+            } else if (this.parentModule) {
+                stateName = this.parentModule.listPageStateName;
+            }
+            
+            var $state = window.$state || this.deps.$state;
+            $state.go(stateName, {
+                search : searchParam
+            });
         },
         
         // *******************
@@ -286,7 +375,7 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
          */
         loadPageBySelect : function(modelFieldName, modelFieldValue) {
             this.model[modelFieldName] = modelFieldValue;
-            this.doInit(); // 加载页面
+            this.load(); // 加载页面
         },
     };
 });

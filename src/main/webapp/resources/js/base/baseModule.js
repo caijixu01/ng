@@ -19,6 +19,11 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
         code : undefined,
         
         /**
+         *  初始化子模块
+         */
+        initModules : false,
+        
+        /**
          * 是否初始化时执行load()
          */
         loadOnInit : false,
@@ -27,6 +32,11 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
          * 后台url
          */
         url : undefined,
+        
+        /**
+         * 合并祖父模块的请求参数
+         */
+        mergeParentsReqParams : false,
         
         /**
          * 加载请求类型 get post
@@ -49,7 +59,6 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
             resp: undefined,
         },
         
-        
         /**
          * 子模块 {模块名:{}, ...}
          */
@@ -60,26 +69,57 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
          */
         isSetModulesToThis : undefined,
         
+//        /**
+//         * get 当前模块对应的页面元素
+//         */
+//        getThisElement : function() {
+//            if (this.controllerName) {
+//                return angular.element("[ng-controller=" + this.controllerName + "]:first");
+//            }
+//        },
+        
         /**
          * 初始化
          */
         init : function() {
 //                    _super.init.apply(this, arguments);
+            var that = this;
+            
             this.preInit();
             this.doInit();
+            this.postInit();
+            
+            this.dealModules(function(module) {
+                if (!module.parentModule) { // 待删 
+                    module.parentModule = that;
+                }
+                if (that.initModules) {
+                    module.init();
+                }
+            });
         },
         
         /**
          * init准备操作
          */
         preInit : function() {
-            if (this.isSetModulesToThis) {
+            // 将模块关联到父模块
+            if (this.parentModule) {
+                var moduleCode = this.code || MyUtil.getUuid();
+                this.parentModule.modules[moduleCode] = this;
+            }
+            
+            if (this.isSetModulesToThis) { // 待删
                 $.extend(this, this.modules);
             }
-
+        },
+        
+        /**
+         * 处理子模块
+         */
+        dealModules : function(fn) {
             for (var key in this.modules) {
-                this.modules[key].parentModule = this;
-                this.modules[key].preInit();
+                fn(this.modules[key]);
             }
         },
         
@@ -91,11 +131,26 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
             if (this.loadOnInit) {
                 this.load();
             }
+        },
+
+        /**
+         * 执行完 init
+         */
+        postInit : function() {
+        },
+        
+        /**
+         * 获取祖父模块请求参数
+         */
+        getParentsReqParams : function() {
+            var params = {};
             
-            // 子模块 load
-            for (var key in this.modules) {
-                this.modules[key].doInit();
+            var module = this;
+            while (module.parentModule) {
+                $.extend(params, module.parentModule.getReqParams());
+                module = module.parentModule;
             }
+            return params;
         },
         
         /**
@@ -119,8 +174,20 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
         load : function() {
             var that = this;
 
-            this.deps.$http({
-                params : this.getReqParams(),
+            var params = this.getReqParams();
+            
+            // 合并祖父模块请求参数
+            if (this.mergeParentsReqParams) {
+                var parentReqParams = this.getParentsReqParams();
+                params = $.extend({}, parentReqParams, params);
+            }
+            
+            logger.log(params);
+//            console.log(params);
+            
+            var $http = window.$http || this.deps.$http;
+            $http({
+                params : params,
                 url : this.url,
                 method : this.loadRequestType
             }).then(function(response) {
@@ -133,6 +200,16 @@ var baseModule = MyUtil.defineModule(undefined, function(_super){
          */
         load_callback : function(result) {
             this.model.resp = result.data;
+        },
+        
+        /**
+         * load 包括 子模块
+         */
+        loadAll : function() {
+            this.load();
+            this.dealModules(function(module) {
+                module.loadAll();
+            });
         },
     };
 });

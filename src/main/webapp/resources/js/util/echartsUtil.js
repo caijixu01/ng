@@ -1,7 +1,7 @@
 (function() {
     'use strict';
 
-    angular.module('wuxingApp').factory('EchartsUtil', function() {
+    angular.module('app').factory('EchartsUtil', function() {
         function _toArrayData(chartData) {
             var dateArr = $.map(chartData, function(data) {
                 return data.data;
@@ -78,8 +78,16 @@
 //                console.log(maxData);
 //                console.log(minData);
                 
-                var that = this;
+                function _getFullNameByName(name) {
+                    var fullName;
+                    if (chartData.chartData && chartData.chartData[0]) {
+                        fullName = ArrayUtil.getByField(chartData.chartData[0].data, "name", name).fullName;
+                    }
+                    return fullName || name;
+//                    return name;
+                }
                 
+                var that = this;
                 
                 var opt = {};
                 if (chartType === this.chartTypes.line) {
@@ -119,6 +127,9 @@
                                         }
                                         return "auto";
                                     })(),
+                                    formatter: function(value) {
+                                        return _getFullNameByName(value);
+                                    }
                                 },
                             }
                         ],
@@ -141,6 +152,7 @@
                                 data : data.data,
                                 yAxisIndex : data.yAxisIndex,
                                 itemStyle: {normal: {areaStyle: {type: 'default'}}},
+                                showAllSymbol : true,
 //                                markPoint : {
 //                                    data : [ {
 //                                        type : 'max',
@@ -181,8 +193,13 @@
                                     lineStyle : { // 属性lineStyle控制线条样式
                                         color : '#aaa',
                                         width : 1
-                                    }
+                                    },
                                 },
+                                axisLabel : {
+                                    formatter: function(value) {
+                                        return _getFullNameByName(value);
+                                    }
+                                },                                
                             }
                         ],
                         yAxis : [
@@ -330,14 +347,46 @@
                     };
                 }
                 
-//                $.extend(true, opt, {
+                $.extend(true, opt, {
+                    tooltip : {
+                        showDelay : 100,
+                        transitionDuration : 1,
+//                        enterable : true,
+//                        position : function(p) {
+//                            return [ p[0] + 10, 0 ];
+//                        }
+                        formatter: (function() {
+                            if (chartType === that.chartTypes.line || chartType === that.chartTypes.bar) {
+                                return function (params,ticket,callback) {
+                                    var res = '' + _getFullNameByName(params[0].name);
+                                    for (var i = 0, l = params.length; i < l; i++) {
+                                        res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
+                                    }
+//                                    setTimeout(function (){
+//                                        // 仅为了模拟异步回调
+//                                        callback(ticket, res);
+//                                    }, 1000)
+//                                    return 'loading';
+                                    return res;
+                                };
+                            } else {
+//                                return function (params,ticket,callback) {
+//                                    var res = '' + _getFullNameByName(params[0].name);
+//                                    for (var i = 0, l = params.length; i < l; i++) {
+//                                        res += '<br/>' + params[i].seriesName + ' : ' + params[i].value;
+//                                    }
+//                                    return res;
+//                                };
+                            }
+                        })()
+                    },
 //                    grid : {
 //                        x : 50,
 //                        y : 50,
 //                        x2 : 30,
 //                        y2 : 50,
 //                    }, 
-//                });
+                });
                 
                 return opt;
             },
