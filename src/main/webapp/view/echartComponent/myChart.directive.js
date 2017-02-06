@@ -1,3 +1,43 @@
+/**
+ * 图表组件
+ * 
+ * demo : <div my-chart-line1="myOption"/>
+ * 
+ * 组件配置说明:
+ * {
+            // 组件 标题名称
+            title : "标题名称", 
+            
+            // 组件 父数据model的名字
+            data : "model", 
+            
+            // 组件 图表配置
+            chart : {
+                // 单击事件
+                onClick : function(e) {
+                    console.log("ieieieieieiei");
+                },
+            },
+            
+            // 组件 概览配置
+            summary : [
+                {
+                    // 显示名
+                    display : "总量",
+                    // 在父数据model中的字段名
+                    name : "total",
+                    // 单击事件
+                    onClick : function() {
+                        console.log(this.name);
+                    }
+                },
+                {
+                    display : "最大",
+                    name : "max",
+                },
+            ],
+        }
+ */
 (function() {
     'use strict';
     
@@ -52,19 +92,33 @@
         };
     });
     
+    var _directiveOption = {
+        scope : true,
+//        restrict: "AE",
+//        templateUrl : "tpl1.html",
+        replace : true,
+        transclude : true,
+//        controller : ModuleUtil.defineController([ '$scope', '$element',
+//            '$attrs', '$transclude', 'EchartsUtil' ], baseMyChart,
+//            function(_super, _deps) {
+//            return {
+//                
+//            };
+//        }),
+    };
+    
+    var _depNames = ['$scope', '$element', '$attrs', '$transclude', 'EchartsUtil'];
+    
     var myModule = angular.module("my-chart", []).directive('myChartLine1', function() {
-        var option = {
-            scope : true,
-//            restrict: "AE",
-            templateUrl : "tpl1.html",
-            replace : true,
-            transclude : true,
-            controller : ModuleUtil.defineController(['$scope', '$element', '$attrs', '$transclude', 'EchartsUtil'], 
+        var option = $.extend({}, _directiveOption, {
+            templateUrl : "myChartLine1.html",
+            controller : ModuleUtil.defineController(_depNames, 
                     baseMyChart, function(_super, _deps) {
                 return {
+                    
                 };
             }),
-        };
+        });
     
         return option;
     });

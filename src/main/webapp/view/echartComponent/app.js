@@ -48,7 +48,7 @@
             data : "model",
             
             chart : {
-                type : "line",
+//                type : "line",
                 onClick : function(e) {
                     console.log("ieieieieieiei");
                 },
