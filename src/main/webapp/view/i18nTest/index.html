@@ -1,0 +1,25 @@
+<!doctype html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" /> 
+</head>
+<body ng-app="myApp">
+    <div ng-controller="MyCtrl">
+        <h2>i18n Test</h2>
+        <ul>
+            <li>{{'firstname' |i18n}}</li>
+            <li>{{'lastname' |i18n}}</li>
+            <li>{{'address' |i18n}}</li>
+            <hr>
+            <li><button class="btn btn-primary"
+                    ng-click="changeLang()">Change Language</button>
+        </ul>
+    </div>
+
+</body>
+</html>
+
+<script src="../../resources/js/jquery.min.js"></script>
+<script src="../../resources/js/angular.js"></script>
+<script src="../../resources/js/angular-translate.js"></script>
+<script src="app.js"></script>
