@@ -1,0 +1,1 @@
+var app = angular.module("app", ['ui.router', "isteven-multi-select", 'my-chart']);

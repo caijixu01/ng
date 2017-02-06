@@ -5,15 +5,11 @@
     <link rel="stylesheet" href="../../resources/js/angular-multi-select/isteven-multi-select.css">
 </head>
 <body>
-    <div ng-controller="ctrl1 as c">
+    <div ng-controller="ctrl1">
         <button ng-click="load()">click1</button>
-        {{c.outputBrowsers}}
-        {{opt.title}}
-        {{c.cjx}}
-        
-        <div my-chart-line1="opt">
-            <div style="height: 100px; width: 200pxi" isteven-multi-select
-                input-model="c.modernBrowsers" output-model="c.outputBrowsers"
+        <div my-chart-line1="chartOption">
+            <div style="height: 100px; width: 200px" isteven-multi-select
+                input-model="modernBrowsers" output-model="$parent.outputBrowsers"
                 button-label="name" item-label="name"
                 tick-property="ticked" >
                 orientation="horizontal"
@@ -31,7 +27,7 @@
 <script src="../../resources/js/angular-multi-select/isteven-multi-select.js"></script>
 <script src="../../resources/js/echarts/echarts.js"></script>
 
-<script src="app.js"></script>
+<script src="rootApp.js"></script>
 
 <script src="../../resources/js/util/myUtil.js"></script>
 <script src="../../resources/js/util/echartsUtil.js"></script>
@@ -41,5 +37,7 @@
 <script src="../../resources/js/base/baseModule.js"></script>
 <script src="../../resources/js/base/baseListModule.js"></script>
 <script src="../../resources/js/base/baseChartModule.js"></script>
+
+<script src="app.js"></script>
 
 <script src="myChart.directive.js"></script>

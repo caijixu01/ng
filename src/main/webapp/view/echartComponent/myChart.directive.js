@@ -60,7 +60,7 @@
                 
                 this.options = $.extend({
                     title : "",
-                    data : "model",
+                    data : "model.charData",
                     chart : {
                         onClick : function(e) {},
                     },
@@ -80,9 +80,11 @@
                 });
                 
                 this.deps.$scope.$parent.$watch(this.deps.$scope.getOptions().data, function(newValue, oldValue, scope) {
-                    scope.data = newValue;
-                    var option = that.getChartOption(newValue.data);
-                    myChart.setOption(option);
+                    if (newValue !== oldValue) {
+                        scope.data = newValue;
+                        var option = that.getChartOption(newValue.data);
+                        myChart.setOption(option);
+                    }
                 });
 
                 this.deps.$transclude(this.deps.$scope, function(clone) {

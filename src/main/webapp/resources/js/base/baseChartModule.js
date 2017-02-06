@@ -289,28 +289,36 @@ var baseChartModule = MyUtil.defineModule(baseModule, function(_super) {
         /**
          * 加载图表-回调函数
          */
-        load_callback : function(response) {
+        load_callback : function(resp) {
             _super.load_callback.apply(this, arguments);
             
             var that = this;
             
-            var response = this.dealResponseData(response);
-            var chartOption = this.getChartOption(response);
-            var dom = this.getChartDom();
-            var myChart = echarts.init(dom, this.getEchartsUtil().getTheme(this.getEchartsUtil().themeTypes.blue));
-            $("div:first", $(dom)).css("overflow","visible"); // 作用: tooltip 不被遮住
-            myChart.setOption(chartOption);
-            if (this.hasClickEvent) {
-                myChart.on("click", function(param) {
-                    var listParam = that.parseListParamByChartParam(param);
-                    that.turnToListPage(undefined, listParam);
+            var response = this.dealResponseData(resp);
+            if (this.isUseChartComponent) {
+                var json = $.extend({}, resp.data, {
+                    data : response
                 });
-            }
+                
+                this.model.charData = json;
+            } else {
+                var chartOption = this.getChartOption(response);
+                var dom = this.getChartDom();
+                var myChart = echarts.init(dom, this.getEchartsUtil().getTheme(this.getEchartsUtil().themeTypes.blue));
+                $("div:first", $(dom)).css("overflow","visible"); // 作用: tooltip 不被遮住
+                myChart.setOption(chartOption);
+                if (this.hasClickEvent) {
+                    myChart.on("click", function(param) {
+                        var listParam = that.parseListParamByChartParam(param);
+                        that.turnToListPage(undefined, listParam);
+                    });
+                }
 //            var that = this;
 //            $(dom).click(function(e) {
 //                that.load();
 //            });
-            return myChart;
+                return myChart;
+            } 
         },
         
         /**
